@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         String response = output.toString();
         return response;
 
-    }*/ 
+    }*/
 private class ExecuteTask extends AsyncTask<String,String,String> {
     final Context context;
     PowerManager.WakeLock mWakeLock;
