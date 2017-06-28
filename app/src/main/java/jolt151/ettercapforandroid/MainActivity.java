@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonQuit;
     Button buttonCustom;
     Button button1;
+    Button buttonKill;
     EditText editTextCustom;
 
 
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         button1 = (Button) findViewById(R.id.button1);
         buttonQuit = (Button) findViewById(R.id.buttonQuit);
         buttonCustom = (Button) findViewById(R.id.buttonCustom);
+        buttonKill = (Button) findViewById(R.id.buttonKill);
         editTextCustom = (EditText) findViewById(R.id.editTextCustom);
         checkBox1 = (CheckBox) findViewById(R.id.checkBox1);
         editText = (EditText) findViewById(R.id.editText);
@@ -76,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
         editTextOutput = (EditText) findViewById(R.id.editTextOutput);
         textView1.setMovementMethod(new ScrollingMovementMethod());
         textView1.setText("output");
+        buttonKill.setAlpha(.5f);
+        buttonKill.setClickable(false);
 
         checkBox1.setOnClickListener(new View.OnClickListener(){
             public void onClick(View arg0){
@@ -184,6 +188,9 @@ public class MainActivity extends AppCompatActivity {
                 button1.setAlpha(.5f);
                 button1.setClickable(false);
 
+                buttonKill.setAlpha(1f);
+                Log.d("EfA", String.valueOf(buttonKill.getAlpha()));
+                buttonKill.setClickable(true);
             }
         });
         buttonQuit.setOnClickListener(new View.OnClickListener()
@@ -215,7 +222,11 @@ public class MainActivity extends AppCompatActivity {
                 catch (Throwable e){}
             }
         });
-
+        buttonKill.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                executeTask.cancel(true);
+            }
+        });
 
     }
 
