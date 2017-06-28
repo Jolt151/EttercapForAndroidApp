@@ -10,11 +10,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="jolt151.ettercapforandroid.MainActivity">
 
+    <Button
+        android:id="@+id/buttonQuit"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Quit"
+        android:layout_below="@+id/textView4"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/editTextTargets" />
+
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="args"
+        android:hint="args"
         android:ems="10"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
@@ -30,12 +39,106 @@
         android:layout_alignParentEnd="true" />
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_height="250dp"
+        android:gravity="bottom"
+        android:text="TextView"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textView1"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/buttonQuit" />
+
+    <EditText
+        android:id="@+id/editTextInterface"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="wlan0"
+        android:layout_below="@+id/button1"
+        android:layout_toEndOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editTextInterface"
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        android:text="Interface:  "
+        android:textColor="@android:color/black"
+        android:textSize="18dp"
+        android:layout_below="@+id/editText" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/editTextInterface"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="Targets:  "
+        android:textColor="@android:color/black"
+        android:textSize="18dp" />
+
+    <EditText
+        android:id="@+id/editTextTargets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextInterface"
+        android:layout_toEndOf="@+id/textView3"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="// //" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Output File: "
+        android:textColor="@android:color/black"
+        android:textSize="18dp"
+        android:layout_toEndOf="@+id/checkBox1"
+        android:layout_alignBottom="@+id/editTextOutput"
+        android:layout_below="@+id/editTextTargets" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView4"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:id="@+id/editTextOutput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTextTargets"
+        android:layout_toEndOf="@+id/textView4"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="file.pcap" />
+
+    <Button
+        android:id="@+id/buttonCustom"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/editTextOutput"
+        android:text="Run Command" />
+
+    <EditText
+        android:id="@+id/editTextCustom"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/checkBox1"
+        android:layout_marginEnd="9dp"
+        android:layout_toStartOf="@+id/buttonCustom"
+        android:ems="10"
+        android:inputType="textPersonName" />
 
 </RelativeLayout>

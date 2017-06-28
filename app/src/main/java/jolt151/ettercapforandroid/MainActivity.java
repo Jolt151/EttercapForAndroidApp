@@ -1,19 +1,23 @@
 package jolt151.ettercapforandroid;
 
-import android.app.Application;
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.PowerManager;
-import android.os.Process;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,15 +26,11 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.channels.Channel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -40,7 +40,19 @@ public class MainActivity extends AppCompatActivity {
     TextView textView1;
     AssetManager assetManager;
     ExecuteTask executeTask;
+    ExecuteTask executeTask2;
+    EditText editTextInterface;
+    EditText editTextTargets;
+    EditText editTextOutput;
+    CheckBox checkBox1;
+    Button buttonQuit;
+    Button buttonCustom;
+    Button button1;
+    EditText editTextCustom;
 
+
+
+    public DataOutputStream outputStream;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +63,30 @@ public class MainActivity extends AppCompatActivity {
         File file = new File("/data/data/" + getPackageName() + "/files/ettercap");
         file.setExecutable(true);
 
-        Button button1 = (Button) findViewById(R.id.button1);
+
+        button1 = (Button) findViewById(R.id.button1);
+        buttonQuit = (Button) findViewById(R.id.buttonQuit);
+        buttonCustom = (Button) findViewById(R.id.buttonCustom);
+        editTextCustom = (EditText) findViewById(R.id.editTextCustom);
+        checkBox1 = (CheckBox) findViewById(R.id.checkBox1);
         editText = (EditText) findViewById(R.id.editText);
         textView1 = (TextView) findViewById(R.id.textView1);
+        editTextInterface = (EditText) findViewById(R.id.editTextInterface);
+        editTextTargets = (EditText) findViewById(R.id.editTextTargets);
+        editTextOutput = (EditText) findViewById(R.id.editTextOutput);
         textView1.setMovementMethod(new ScrollingMovementMethod());
         textView1.setText("output");
 
+        checkBox1.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View arg0){
+                int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheck == PackageManager.PERMISSION_DENIED){
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            1);
+                }
+            }
+        });
 
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,25 +127,96 @@ public class MainActivity extends AppCompatActivity {
                     if (process != null) process.destroy();
                 }
             */
-
+/*                String filePath = Environment.getExternalStorageDirectory().toString()+"/Ettercap for Android";
+                String fileName = editTextOutput.getText().toString();
                 //textView1.setText("Output: \n \n " + runAsRoot());
                 //String outp = runAsRoot("/data/data/jolt151.ettercapforandroid/files/ettercap "+ editText.getText().toString());
                 //String outp = runAsRoot("ls");
                 //textView1.setText(outp);
                 //Log.d("Output", outp);
-               /* StringBuilder builder = new StringBuilder("");
+               *//* StringBuilder builder = new StringBuilder("");
                 builder.append("su");
                 String cmdline = builder.toString();
                 executeTask = new ExecuteTask(getApplicationContext());
-                executeTask.execute(cmdline);*/
+                executeTask.execute(cmdline);*//*             File file = new File(filePath, fileName);
+                File file1 = new File()
+                Log.d("EfA", file.toString());
+                Log.d("EfA",String.valueOf(file.exists()));
+
+                if (!file.exists() || file.isDirectory())
+                {
+                    file.mkdirs();
+                }
+                Log.d("EfA",String.valueOf(file.exists()));*/
+
+                File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
+
+                if (!root.exists()) {
+                    root.mkdirs();
+                }
+
                 StringBuilder builder1 = new StringBuilder("");
-                builder1.append("/data/data/jolt151.ettercapforandroid/files/ettercap " + editText.getText().toString());
+                if (checkBox1.isChecked())
+                {
+                    builder1.append("cd /data/data/" + getPackageName() +"/files && pwd && su &&" +"/data/data/jolt151.ettercapforandroid/files/ettercap "
+                            + "-i " + editTextInterface.getText().toString() +" "
+                            + editText.getText().toString() +" "
+                            + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() +" "
+                            + editTextTargets.getText().toString()
+                    );
+
+                    Toast.makeText(getApplicationContext(),"Saving to /sdcard/Ettercap for Android/" + editTextOutput.getText().toString(),Toast.LENGTH_SHORT);
+                }
+                else
+                {
+                    builder1.append(" cd /data/data/" + getPackageName() +"/files && pwd && whoami &&" +"/data/data/jolt151.ettercapforandroid/files/ettercap "
+                            + "-i " + editTextInterface.getText().toString() +" "
+                            + editText.getText().toString() +" "
+                            + editTextTargets.getText().toString()
+                    );
+                }
+
                 String cmdline = builder1.toString();
                 executeTask = new ExecuteTask(getApplicationContext());
+                //executeTask.execute("su");
                 executeTask.execute(cmdline);
+
+                button1.setAlpha(.5f);
+                button1.setClickable(false);
 
             }
         });
+        buttonQuit.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View arg0){
+/*                StringBuilder builder2 = new StringBuilder("");
+                builder2.append("q");
+                String cmdline = builder2.toString();
+                executeTask2 = new ExecuteTask(getApplicationContext());
+                executeTask2.execute(cmdline);*/
+                try {
+                     outputStream.writeBytes("q");
+                     outputStream.flush();
+                     Log.d("EfA", "Quit");
+                }
+                 catch (Throwable e){}
+
+                button1.setAlpha(1f);
+                button1.setClickable(true);
+            }
+        });
+        buttonCustom.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View arg0){
+                try{
+                    outputStream.writeBytes(editTextCustom.getText().toString());
+                    outputStream.flush();
+
+                }
+                catch (Throwable e){}
+            }
+        });
+
+
     }
 
 
@@ -301,9 +402,9 @@ private class ExecuteTask extends AsyncTask<String,String,String> {
         String cmdline=sParm[0];
         String pstdout=null;
         StringBuilder wholeoutput = new StringBuilder("");
-        String[] commands = { "cd /data/data/" + getPackageName() +"/files", "pwd","su",cmdline };
+        String[] commands = { /*"cd /data/data/" + getPackageName() +"/files", "pwd","su",*/"su", cmdline };
 
-        DataOutputStream outputStream;
+        //DataOutputStream outputStream;
         BufferedReader inputStream;
 
 //            Process scanProcess;
@@ -317,7 +418,7 @@ private class ExecuteTask extends AsyncTask<String,String,String> {
             inputStream = new BufferedReader(new InputStreamReader(scanProcess.getInputStream()));
 
             for (String single : commands) {
-                Log.i("NetworkMapper","Single Executing: "+single);
+                Log.i("EfA","Single Executing: "+single);
                 outputStream.writeBytes(single + "\n");
                 outputStream.flush();
             }
@@ -332,11 +433,12 @@ private class ExecuteTask extends AsyncTask<String,String,String> {
                         pstdout = pstdout + "\n";
                         wholeoutput.append(pstdout);
                     }
-                    Log.i("NetworkMapper", "Stdout: " + pstdout);
+                    Log.i("EfA", "Stdout: " + pstdout);
                     publishProgress(pstdout, null);
                     pstdout = null;
                 }
             }
+
 
             if (!isCancelled()) scanProcess.waitFor();
         } catch (IOException | InterruptedException e) {
@@ -356,7 +458,7 @@ private class ExecuteTask extends AsyncTask<String,String,String> {
                 getClass().getName());
         mWakeLock.acquire();
 
-        Toast.makeText(context,"started", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context,"Started", Toast.LENGTH_SHORT).show();
     }
 
     @Override
