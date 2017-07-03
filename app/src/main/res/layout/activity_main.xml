@@ -44,20 +44,20 @@
         android:layout_height="250dp"
         android:gravity="bottom"
         android:text="TextView"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/editTextCustom"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/buttonQuit" />
+        android:layout_alignParentBottom="true" />
 
     <EditText
         android:id="@+id/editTextInterface"
-        android:layout_width="100dp"
+        android:layout_width="81dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/button1"
+        android:layout_toEndOf="@+id/textView2"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="wlan0"
-        android:layout_below="@+id/button1"
-        android:layout_toEndOf="@+id/textView3" />
+        android:text="wlan0" />
 
     <TextView
         android:id="@+id/textView2"
@@ -65,21 +65,21 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/editTextInterface"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/editText"
         android:gravity="center"
-        android:text="Interface:  "
+        android:text="Interface:"
         android:textColor="@android:color/black"
-        android:textSize="18dp"
-        android:layout_below="@+id/editText" />
+        android:textSize="18dp" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextTargets"
+        android:layout_alignBottom="@+id/editTextTargets"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/editTextInterface"
-        android:layout_marginTop="15dp"
         android:gravity="center"
-        android:text="Targets:  "
+        android:text="Targets:"
         android:textColor="@android:color/black"
         android:textSize="18dp" />
 
@@ -125,18 +125,18 @@
 
     <Button
         android:id="@+id/buttonCustom"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/button1"
         android:layout_below="@+id/editTextOutput"
-        android:text="Run Command" />
+        android:layout_toEndOf="@+id/buttonKill"
+        android:text="Run" />
 
     <EditText
         android:id="@+id/editTextCustom"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/checkBox1"
-        android:layout_marginEnd="9dp"
         android:layout_toStartOf="@+id/buttonCustom"
         android:ems="10"
         android:inputType="textPersonName" />
@@ -145,9 +145,13 @@
         android:id="@+id/buttonKill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textView1"
+        android:layout_alignEnd="@+id/editTextInterface"
         android:layout_below="@+id/textView4"
         android:layout_toEndOf="@+id/buttonQuit"
-        android:text="Kill AsyncTask" />
+        android:text="Kill Task"
+        android:layout_alignBottom="@+id/buttonQuit" />
+
 
 </RelativeLayout>
+
+
