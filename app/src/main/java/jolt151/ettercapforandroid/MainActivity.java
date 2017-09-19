@@ -101,46 +101,53 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+            if(!editText.getText().toString().equals("")){
+                    Log.d("EfA",editText.getText().toString());
 
+                    File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
 
-                File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
+                    if (!root.exists()) {
+                        root.mkdirs();
+                    }
 
-                if (!root.exists()) {
-                    root.mkdirs();
+                    StringBuilder builder1 = new StringBuilder("");
+                    if (checkBox1.isChecked()) {
+                        builder1.append("cd /data/data/" + getPackageName() + "/files && pwd && su &&" + "/data/data/jolt151.ettercapforandroid/files/ettercap "
+                                + "-i " + editTextInterface.getText().toString() + " "
+                                + editText.getText().toString() + " "
+                                + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() + " "
+                                + editTextTargets.getText().toString()
+                        );
+
+                        Toast.makeText(getApplicationContext(), "Saving to /sdcard/Ettercap for Android/" + editTextOutput.getText().toString(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        builder1.append(" cd /data/data/" + getPackageName() + "/files && pwd && whoami &&" + "/data/data/jolt151.ettercapforandroid/files/ettercap "
+                                + "-i " + editTextInterface.getText().toString() + " "
+                                + editText.getText().toString() + " "
+                                + editTextTargets.getText().toString()
+                        );
+                    }
+                    String cmdline = builder1.toString();
+                    executeTask = new ExecuteTask(getApplicationContext());
+                    executeTask.execute(cmdline);
+
+                    button1.setAlpha(.5f);
+                    button1.setClickable(false);
+
+                    //@TODO fix running multiple times, then see if we still need this button
+                    //buttonKill.setEnabled(true);
+
+                    editText.setEnabled(false);
+                    editTextInterface.setEnabled(false);
+                    editTextOutput.setEnabled(false);
+                    editTextTargets.setEnabled(false);
+                    checkBox1.setEnabled(false);
+
                 }
-
-                StringBuilder builder1 = new StringBuilder("");
-                if (checkBox1.isChecked()) {
-                    builder1.append("cd /data/data/" + getPackageName() + "/files && pwd && su &&" + "/data/data/jolt151.ettercapforandroid/files/ettercap "
-                            + "-i " + editTextInterface.getText().toString() + " "
-                            + editText.getText().toString() + " "
-                            + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() + " "
-                            + editTextTargets.getText().toString()
-                    );
-
-                    Toast.makeText(getApplicationContext(), "Saving to /sdcard/Ettercap for Android/" + editTextOutput.getText().toString(), Toast.LENGTH_SHORT);
-                } else {
-                    builder1.append(" cd /data/data/" + getPackageName() + "/files && pwd && whoami &&" + "/data/data/jolt151.ettercapforandroid/files/ettercap "
-                            + "-i " + editTextInterface.getText().toString() + " "
-                            + editText.getText().toString() + " "
-                            + editTextTargets.getText().toString()
-                    );
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"No args!", Toast.LENGTH_SHORT).show();
                 }
-                String cmdline = builder1.toString();
-                executeTask = new ExecuteTask(getApplicationContext());
-                executeTask.execute(cmdline);
-
-                button1.setAlpha(.5f);
-                button1.setClickable(false);
-
-                //@TODO fix running multiple times, then see if we still need this button
-                //buttonKill.setEnabled(true);
-
-                editText.setEnabled(false);
-                editTextInterface.setEnabled(false);
-                editTextOutput.setEnabled(false);
-                editTextTargets.setEnabled(false);
-                checkBox1.setEnabled(false);
             }
         });
         buttonQuit.setOnClickListener(new View.OnClickListener() {
@@ -391,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
                     "Once ettercap is running, you can use the lower run command to input certain keystrokes. For example, 'h' will show the available options, and " +
                     "'q' will quit ettercap safely. The quit button is identical to running 'q'.\n" +
                     "This app is still in beta. Expect crashes, and expect to restart after using once. The 'Kill AsyncTask' button is supposed to refresh the app " +
-                    "so it can be run again, but it still doesnt work, so it's disabled for now. To run ettercap again, restart the app." +
+                    "so it can be run again, but it still doesn't work, so it's disabled for now. To run ettercap again, restart the app." +
                     "\n I'd love to hear your feedback! Drop me a message at jolt0101@gmail.com, or at least until I find a better way of collecting feedback.")
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
