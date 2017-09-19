@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("EfA", "Quit");
                 } catch (Throwable e) {
                 }
-
+                buttonKill.setEnabled(true);
 
             }
         });
@@ -320,8 +320,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void cleanupOnEnd() {
-            mWakeLock.release();
+
+            if(mWakeLock.isHeld()) {
+                mWakeLock.release();
+            }
             setSupportProgressBarIndeterminateVisibility(false);
+            recreate();
             //startedScan=false;
             //scanButton.setText(getString(R.string.scanbtn));
             //scrollToBottom();
@@ -432,6 +436,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.help:
                 showDialog(1);
                 return true;
+            case R.id.settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
 
