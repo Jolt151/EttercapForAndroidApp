@@ -437,8 +437,7 @@ public class MainActivity extends AppCompatActivity {
                 showDialog(1);
                 return true;
             case R.id.settings:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                startActivity( new Intent(MainActivity.this, SettingsActivity.class));
             default:
                 return super.onOptionsItemSelected(item);
 
