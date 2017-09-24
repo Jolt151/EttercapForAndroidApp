@@ -5,12 +5,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -86,6 +88,16 @@ public class MainActivity extends AppCompatActivity {
         textView1.setText("output");
         //@TODO see later: evaluate if we can run multiple times without this button.
         buttonKill.setEnabled(false);
+        buttonQuit.setEnabled(false);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultArgs = sharedPrefs.getString("default_args",null);
+        String defaultInterface = sharedPrefs.getString("default_interface", null);
+        String defaultTargets = sharedPrefs.getString("default_targets", null);
+
+        editText.setText(defaultArgs);
+        editTextInterface.setText(defaultInterface);
+        editTextTargets.setText(defaultTargets);
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
@@ -102,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
             if(!editText.getText().toString().equals("")){
+                    buttonQuit.setEnabled(true);
                     Log.d("EfA",editText.getText().toString());
 
                     File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
@@ -163,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("EfA", "Quit");
                 } catch (Throwable e) {
                 }
-
+                buttonKill.setEnabled(true);
 
             }
         });
@@ -320,8 +333,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void cleanupOnEnd() {
-            mWakeLock.release();
+
+            if(mWakeLock.isHeld()) {
+                mWakeLock.release();
+            }
             setSupportProgressBarIndeterminateVisibility(false);
+            recreate();
             //startedScan=false;
             //scanButton.setText(getString(R.string.scanbtn));
             //scrollToBottom();
@@ -432,6 +449,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.help:
                 showDialog(1);
                 return true;
+            case R.id.settings:
+                startActivity( new Intent(MainActivity.this, SettingsActivity.class));
             default:
                 return super.onOptionsItemSelected(item);
 
