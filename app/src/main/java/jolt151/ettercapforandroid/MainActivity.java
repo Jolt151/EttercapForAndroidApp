@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         buttonKill.setEnabled(false);
         buttonQuit.setEnabled(false);
 
+        PreferenceManager.setDefaultValues(this,R.xml.preferences,false);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultArgs = sharedPrefs.getString("default_args",null);
         String defaultInterface = sharedPrefs.getString("default_interface", null);

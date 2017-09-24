@@ -2,7 +2,7 @@
     <string name="app_name">Ettercap for Android</string>
     <string name="title_activity_settings">Settings</string>
 
-    
+
     <string name="pref_default_args">default_args</string>
     <string name="pref_default_interface">default_interface</string>
     <string name="pref_default_targets">default_targets</string>
