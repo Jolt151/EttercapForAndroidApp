@@ -5,12 +5,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -86,6 +88,15 @@ public class MainActivity extends AppCompatActivity {
         textView1.setText("output");
         //@TODO see later: evaluate if we can run multiple times without this button.
         buttonKill.setEnabled(false);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultArgs = sharedPrefs.getString("default_args",null);
+        String defaultInterface = sharedPrefs.getString("default_interface", null);
+        String defaultTargets = sharedPrefs.getString("default_targets", null);
+
+        editText.setText(defaultArgs);
+        editTextInterface.setText(defaultInterface);
+        editTextTargets.setText(defaultTargets);
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
