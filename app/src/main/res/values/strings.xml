@@ -76,4 +76,10 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    
+    
+    <string name="pref_default_args">default_args</string>
+    <string name="pref_default_interface">default_interface</string>
+    <string name="pref_default_targets">default_targets</string>
 </resources>

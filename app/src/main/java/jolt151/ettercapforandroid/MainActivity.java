@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         textView1.setText("output");
         //@TODO see later: evaluate if we can run multiple times without this button.
         buttonKill.setEnabled(false);
+        buttonQuit.setEnabled(false);
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultArgs = sharedPrefs.getString("default_args",null);
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
             if(!editText.getText().toString().equals("")){
+                    buttonQuit.setEnabled(true);
                     Log.d("EfA",editText.getText().toString());
 
                     File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");

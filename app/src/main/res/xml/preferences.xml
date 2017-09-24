@@ -8,15 +8,18 @@
         <EditTextPreference
             app:title="Default args"
             app:key="default_args"
-            app:defaultValue=""/>
+            app:defaultValue=""
+            app:summary=""/>
         <EditTextPreference
             app:title="Default Interface"
             app:key="default_interface"
-            app:defaultValue="wlan0"/>
+            app:defaultValue="wlan0"
+            app:summary="wlan0"/>
         <EditTextPreference
             app:title="Default Targets"
             app:key="default_targets"
             app:defaultValue="// //"
+            app:summary="// //"
             />
     </PreferenceCategory>
 </PreferenceScreen>
