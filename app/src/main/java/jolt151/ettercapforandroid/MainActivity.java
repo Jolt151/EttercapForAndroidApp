@@ -29,9 +29,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -67,9 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         //copyAssetFolder(assetManager,"file://android_asset", toPath);
-        copyFromAssetsToInternalStorage("ettercap-android.zip");
-        unZipFile("ettercap-android.zip");
-        File file = new File("/data/data/" + getPackageName() + "/files/ettercap");
+        copyFromAssetsToInternalStorage("EttercapForAndroid.zip");
+        unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
+//        unZipFile("EttercapForAndroid.zip");
+
+        File file = new File("/data/data/" + getPackageName() + "/files/bin/ettercap");
         file.setExecutable(true);
 
 
@@ -126,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
 
                     StringBuilder builder1 = new StringBuilder("");
                     if (checkBox1.isChecked()) {
-                        builder1.append("cd /data/data/" + getPackageName() + "/files && pwd && su &&" + "/data/data/jolt151.ettercapforandroid/files/ettercap "
+                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid/bin/" + " && pwd && su &&" + Constants.CHMOD + " && "+
+                                Constants.FILES_DIR + "EttercapForAndroid/bin/ettercap "
                                 + "-i " + editTextInterface.getText().toString() + " "
                                 + editText.getText().toString() + " "
                                 + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() + " "
@@ -135,7 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(), "Saving to /sdcard/Ettercap for Android/" + editTextOutput.getText().toString(), Toast.LENGTH_SHORT).show();
                     } else {
-                        builder1.append(" cd /data/data/" + getPackageName() + "/files && pwd && whoami &&" + "/data/data/jolt151.ettercapforandroid/files/ettercap "
+                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid/bin/" + " && pwd && su &&" + Constants.CHMOD + " && "+
+                                Constants.FILES_DIR + "EttercapForAndroid/bin/ettercap "
                                 + "-i " + editTextInterface.getText().toString() + " "
                                 + editText.getText().toString() + " "
                                 + editTextTargets.getText().toString()
@@ -240,6 +246,55 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean unpackZip(String path, String zipname)
+    {
+        InputStream is;
+        ZipInputStream zis;
+        try
+        {
+            String filename;
+            is = new FileInputStream(path + zipname);
+            zis = new ZipInputStream(new BufferedInputStream(is));
+            ZipEntry ze;
+            byte[] buffer = new byte[1024];
+            int count;
+
+            while ((ze = zis.getNextEntry()) != null)
+            {
+                // zapis do souboru
+                filename = ze.getName();
+
+                // Need to create directories if not exists, or
+                // it will generate an Exception...
+                if (ze.isDirectory()) {
+                    File fmd = new File(path + filename);
+                    fmd.mkdirs();
+                    continue;
+                }
+
+                FileOutputStream fout = new FileOutputStream(path + filename);
+
+                // cteni zipu a zapis
+                while ((count = zis.read(buffer)) != -1)
+                {
+                    fout.write(buffer, 0, count);
+                }
+
+                fout.close();
+                zis.closeEntry();
+            }
+
+            zis.close();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     private void copyFile(InputStream in, OutputStream out) throws IOException {
