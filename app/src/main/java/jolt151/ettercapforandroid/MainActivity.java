@@ -2,6 +2,7 @@ package jolt151.ettercapforandroid;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +41,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -67,13 +71,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         showDialog(0);
 
-
-        //copyAssetFolder(assetManager,"file://android_asset", toPath);
-        copyFromAssetsToInternalStorage("EttercapForAndroid.zip");
-        unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
-//        unZipFile("EttercapForAndroid.zip");
-
         File file = new File("/data/data/" + getPackageName() + "/files/bin/ettercap");
+
+        if(!file.exists()){
+            showDialog(2);
+        }
+
+        //copyFromAssetsToInternalStorage("EttercapForAndroid.zip");
+        //unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
+
+
+
         file.setExecutable(true);
 
 
@@ -445,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
     protected Dialog onCreateDialog(int id) {
         AlertDialog alert;
         if (id == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("LEGAL DISCLAIMER: I AM NOT RESPONSIBLE FOR ANYTHING THAT MAY HAPPEN BECAUSE OF THIS APP. BY USING THIS APP, YOU AFFIRM THAT YOU HAVE" +
                     " PERMISSION TO USE ETTERCAP AND SIMILAR TOOLS ON THE NETWORK.\n" +
                     "This app is in beta. Ettercap is a big program. MOST of the features are untested, aside from the main ones. Expect frequent restarts.")
@@ -460,9 +468,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
             alert = builder.create();
-            //return alert;
+            return alert;
         } else if (id == 1) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("To use this tool, put in the proper arguments for ettercap, such as \"-Tq -M" +
                     " arp:remote\". The interface in most cases will be wlan0. You can set the targets like Ettercap: // // targets the whole network, while " +
                     "/192.168.1.101/ // will target that specific IP. The -i field is automatically added with the value in \"interface\", and the -w field is added" +
@@ -486,10 +494,36 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             alert = builder.create();
-            //return alert;
+            return alert;
+        } else if(id == 2){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Ettercap binaries are not installed. Download now?")
+                    .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new DownloadFile().execute("https://github.com/Jolt151/EttercapForAndroid/archive/master.zip");
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+            alert = builder.create();
+            return alert;
+        }
+        else if (id == 3){
+                mProgressDialog = new ProgressDialog(this);
+                mProgressDialog.setMessage("Downloading file…");
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setMax(100);
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgressDialog.setCancelable(true);
+                mProgressDialog.show();
+                return mProgressDialog;
         }
         else {return null;}
-        return alert;
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
@@ -510,6 +544,79 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    ProgressDialog mProgressDialog;
+
+    // DownloadFile AsyncTask
+    private class DownloadFile extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create progress dialog
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            // Set your progress dialog Title
+            mProgressDialog.setTitle("Progress Bar Tutorial");
+            // Set your progress dialog Message
+            mProgressDialog.setMessage("Downloading, Please Wait!");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setMax(100);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            // Show progress dialog
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... Url) {
+            try {
+                URL url = new URL(Url[0]);
+                URLConnection connection = url.openConnection();
+                connection.connect();
+
+                // Detect the file length
+                int fileLength = connection.getContentLength();
+
+                // Locate storage location
+                String filepath = Environment.getExternalStorageDirectory()
+                        .getPath();
+
+                // Download the file
+                InputStream input = new BufferedInputStream(url.openStream());
+
+                // Save the downloaded file
+                OutputStream output = new FileOutputStream(Constants.FILES_DIR + "EttercapForAndroid.zip");
+
+                byte data[] = new byte[1024];
+                long total = 0;
+                int count;
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // Publish the progress
+                    publishProgress((int) (total * 100 / fileLength));
+                    output.write(data, 0, count);
+                }
+
+                // Close connection
+                output.flush();
+                output.close();
+                input.close();
+            } catch (Exception e) {
+                // Error Log
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            // Update the progress dialog
+            mProgressDialog.setProgress(progress[0]);
+            // Dismiss the progress dialog
+            //mProgressDialog.dismiss();
         }
     }
 }
