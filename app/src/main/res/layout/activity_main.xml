@@ -27,7 +27,7 @@
         android:ems="10"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/editText"
+        android:id="@+id/editTextArgs"
         android:layout_toStartOf="@+id/button1" />
 
     <Button
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/editTextInterface"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/editTextArgs"
         android:gravity="center"
         android:text="Interface:"
         android:textColor="@android:color/black"
