@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         File file = new File("/data/data/" + getPackageName() + "/files/EttercapForAndroid-master/bin/ettercap");
 
-        //@TODO the dialog also shows the second time loading the app, specifically after going to settings then exiting right after downloading
         if (!file.exists()) {
             showDialog(2);
         }
@@ -430,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
             alert = builder.create();
             return alert;
         } else if (id == 2) {
+            Log.d(LOGTAG, Log.getStackTraceString(new Exception()));
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("Ettercap binaries are not installed. Download now?")
                     .setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -456,6 +456,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //Don't forget to return true or break after cases
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
@@ -467,8 +468,10 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.settings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                return true;
             case R.id.download:
                 showDialog(2);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
