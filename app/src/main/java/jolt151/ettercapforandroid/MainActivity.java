@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         File file = new File("/data/data/" + getPackageName() + "/files/EttercapForAndroid-master/bin/ettercap");
 
+        //@TODO the dialog also shows the second time loading the app, specifically after going to settings then exiting right after downloading
         if (!file.exists()) {
             showDialog(2);
         }
@@ -228,32 +229,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void unZipFile(String filename) {
-        try {
-            ZipInputStream zipInputStream = new ZipInputStream(openFileInput(filename));
-            ZipEntry zipEntry;
-
-            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                FileOutputStream zipOutputStream = openFileOutput(zipEntry.getName(), MODE_PRIVATE);
-
-                int length;
-                byte[] buffer = new byte[1024];
-
-                while ((length = zipInputStream.read(buffer)) > 0) {
-                    zipOutputStream.write(buffer, 0, length);
-                }
-
-                zipOutputStream.close();
-                zipInputStream.closeEntry();
-            }
-            zipInputStream.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private boolean unpackZip(String path, String zipname) {
         InputStream is;
@@ -654,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
             // Display File path after downloading
             Toast.makeText(getApplicationContext(),
                     message, Toast.LENGTH_LONG).show();
-            
+
             unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
 
         }
