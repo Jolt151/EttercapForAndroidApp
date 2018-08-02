@@ -44,6 +44,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,15 +73,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         showDialog(0);
 
-        File file = new File("/data/data/" + getPackageName() + "/files/bin/ettercap");
+        File file = new File("/data/data/" + getPackageName() + "/files/EttercapForAndroid-master/bin/ettercap");
 
-        if(!file.exists()){
+        if (!file.exists()) {
             showDialog(2);
         }
 
         //copyFromAssetsToInternalStorage("EttercapForAndroid.zip");
         //unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
-
 
 
         file.setExecutable(true);
@@ -102,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
         buttonKill.setEnabled(false);
         buttonQuit.setEnabled(false);
 
-        PreferenceManager.setDefaultValues(this,R.xml.preferences,false);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String defaultArgs = sharedPrefs.getString("default_args",null);
+        String defaultArgs = sharedPrefs.getString("default_args", null);
         String defaultInterface = sharedPrefs.getString("default_interface", null);
         String defaultTargets = sharedPrefs.getString("default_targets", null);
 
@@ -126,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-            if(!editText.getText().toString().equals("")){
+                if (!editText.getText().toString().equals("")) {
                     buttonQuit.setEnabled(true);
-                    Log.d("EfA",editText.getText().toString());
+                    Log.d("EfA", editText.getText().toString());
 
                     File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
 
@@ -138,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
                     StringBuilder builder1 = new StringBuilder("");
                     if (checkBox1.isChecked()) {
-                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid/bin/" + " && pwd && su &&" + Constants.CHMOD + " && "+
-                                Constants.FILES_DIR + "EttercapForAndroid/bin/ettercap "
+                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && pwd && su &&" + Constants.CHMOD + " && " +
+                                Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
                                 + "-i " + editTextInterface.getText().toString() + " "
                                 + editText.getText().toString() + " "
                                 + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() + " "
@@ -148,8 +149,8 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast.makeText(getApplicationContext(), "Saving to /sdcard/Ettercap for Android/" + editTextOutput.getText().toString(), Toast.LENGTH_SHORT).show();
                     } else {
-                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid/bin/" + " && pwd && su &&" + Constants.CHMOD + " && "+
-                                Constants.FILES_DIR + "EttercapForAndroid/bin/ettercap "
+                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && pwd && su &&" + Constants.CHMOD + " && " +
+                                Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
                                 + "-i " + editTextInterface.getText().toString() + " "
                                 + editText.getText().toString() + " "
                                 + editTextTargets.getText().toString()
@@ -171,10 +172,8 @@ public class MainActivity extends AppCompatActivity {
                     editTextTargets.setEnabled(false);
                     checkBox1.setEnabled(false);
 
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"No args!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "No args!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -256,12 +255,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean unpackZip(String path, String zipname)
-    {
+    private boolean unpackZip(String path, String zipname) {
         InputStream is;
         ZipInputStream zis;
-        try
-        {
+        try {
             String filename;
             is = new FileInputStream(path + zipname);
             zis = new ZipInputStream(new BufferedInputStream(is));
@@ -269,8 +266,7 @@ public class MainActivity extends AppCompatActivity {
             byte[] buffer = new byte[1024];
             int count;
 
-            while ((ze = zis.getNextEntry()) != null)
-            {
+            while ((ze = zis.getNextEntry()) != null) {
                 // zapis do souboru
                 filename = ze.getName();
 
@@ -285,8 +281,7 @@ public class MainActivity extends AppCompatActivity {
                 FileOutputStream fout = new FileOutputStream(path + filename);
 
                 // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1)
-                {
+                while ((count = zis.read(buffer)) != -1) {
                     fout.write(buffer, 0, count);
                 }
 
@@ -295,9 +290,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             zis.close();
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -398,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
 
         protected void cleanupOnEnd() {
 
-            if(mWakeLock.isHeld()) {
+            if (mWakeLock.isHeld()) {
                 mWakeLock.release();
             }
             setSupportProgressBarIndeterminateVisibility(false);
@@ -487,15 +480,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     })
                     .setNegativeButton("Ettercap Man Page", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent i = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://linux.die.net/man/8/ettercap"));
-                    startActivity(i);
-                }
-            });
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent i = new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("https://linux.die.net/man/8/ettercap"));
+                            startActivity(i);
+                        }
+                    });
             alert = builder.create();
             return alert;
-        } else if(id == 2){
+        } else if (id == 2) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("Ettercap binaries are not installed. Download now?")
                     .setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -512,27 +505,28 @@ public class MainActivity extends AppCompatActivity {
                     });
             alert = builder.create();
             return alert;
+        } else if (id == 3) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage("Downloading file…");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setMax(100);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+            mProgressDialog.show();
+            return mProgressDialog;
+        } else {
+            return null;
         }
-        else if (id == 3){
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("Downloading file…");
-                mProgressDialog.setIndeterminate(false);
-                mProgressDialog.setMax(100);
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(true);
-                mProgressDialog.show();
-                return mProgressDialog;
-        }
-        else {return null;}
     }
 
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
-    public boolean onOptionsItemSelected(MenuItem item){
+
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch(id){
+        switch (id) {
             case R.id.disclaimer:
                 showDialog(0);
                 return true;
@@ -540,7 +534,9 @@ public class MainActivity extends AppCompatActivity {
                 showDialog(1);
                 return true;
             case R.id.settings:
-                startActivity( new Intent(MainActivity.this, SettingsActivity.class));
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            case R.id.download:
+                showDialog(2);
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -549,75 +545,120 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressDialog mProgressDialog;
 
-    // DownloadFile AsyncTask
-    private class DownloadFile extends AsyncTask<String, Integer, String> {
+    /**
+     * Async Task to download file from URL
+     */
+    private class DownloadFile extends AsyncTask<String, String, String> {
 
+        private ProgressDialog progressDialog;
+        private String fileName;
+        private String folder;
+        private boolean isDownloaded;
+
+        /**
+         * Before starting background thread
+         * Show Progress Bar Dialog
+         */
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Create progress dialog
-            mProgressDialog = new ProgressDialog(MainActivity.this);
-            // Set your progress dialog Title
-            mProgressDialog.setTitle("Progress Bar Tutorial");
-            // Set your progress dialog Message
-            mProgressDialog.setMessage("Downloading, Please Wait!");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setMax(100);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            // Show progress dialog
-            mProgressDialog.show();
+            this.progressDialog = new ProgressDialog(MainActivity.this);
+            this.progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            this.progressDialog.setCancelable(false);
+            this.progressDialog.show();
         }
 
+        /**
+         * Downloading file in background thread
+         */
         @Override
-        protected String doInBackground(String... Url) {
+        protected String doInBackground(String... f_url) {
+            int count;
             try {
-                URL url = new URL(Url[0]);
+                URL url = new URL(f_url[0]);
                 URLConnection connection = url.openConnection();
                 connection.connect();
+                // getting file length
+                int lengthOfFile = connection.getContentLength();
 
-                // Detect the file length
-                int fileLength = connection.getContentLength();
 
-                // Locate storage location
-                String filepath = Environment.getExternalStorageDirectory()
-                        .getPath();
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
-                // Download the file
-                InputStream input = new BufferedInputStream(url.openStream());
+                String timestamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
-                // Save the downloaded file
-                OutputStream output = new FileOutputStream(Constants.FILES_DIR + "EttercapForAndroid.zip");
+                //Extract file name from URL
+                //fileName = f_url[0].substring(f_url[0].lastIndexOf('/') + 1, f_url[0].length());
+                fileName = "EttercapForAndroid.zip";
+
+                //Append timestamp to file name
+                //fileName = timestamp + "_" + fileName;
+
+                //External directory path to save file
+                folder = Constants.FILES_DIR;
+
+                //Create androiddeft folder if it does not exist
+                File directory = new File(folder);
+
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Output stream to write file
+                OutputStream output = new FileOutputStream(folder + fileName);
 
                 byte data[] = new byte[1024];
+
                 long total = 0;
-                int count;
+
                 while ((count = input.read(data)) != -1) {
                     total += count;
-                    // Publish the progress
-                    publishProgress((int) (total * 100 / fileLength));
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress("" + (int) ((total * 100) / lengthOfFile));
+                    Log.d("EfA", "Progress: " + (int) ((total * 100) / lengthOfFile));
+
+                    // writing data to file
                     output.write(data, 0, count);
                 }
 
-                // Close connection
+                // flushing output
                 output.flush();
+
+                // closing streams
                 output.close();
                 input.close();
+                return "Downloaded at: " + folder + fileName;
+
             } catch (Exception e) {
-                // Error Log
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
+                Log.e("Error: ", e.getMessage());
             }
-            return null;
+
+            return "Something went wrong";
         }
 
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            // Update the progress dialog
-            mProgressDialog.setProgress(progress[0]);
-            // Dismiss the progress dialog
-            //mProgressDialog.dismiss();
+        /**
+         * Updating progress bar
+         */
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            progressDialog.setProgress(Integer.parseInt(progress[0]));
         }
+
+
+        @Override
+        protected void onPostExecute(String message) {
+            // dismiss the dialog after the file was downloaded
+            this.progressDialog.dismiss();
+
+            // Display File path after downloading
+            Toast.makeText(getApplicationContext(),
+                    message, Toast.LENGTH_LONG).show();
+            
+            unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
+
+        }
+
     }
 }
 

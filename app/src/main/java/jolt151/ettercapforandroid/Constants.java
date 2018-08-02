@@ -6,5 +6,5 @@ package jolt151.ettercapforandroid;
 
 public class Constants {
     public static String FILES_DIR = "/data/data/jolt151.ettercapforandroid/files/";
-    public static String CHMOD = "chmod 777 " + FILES_DIR + "EttercapForAndroid/bin/ettercap";
+    public static String CHMOD = "chmod 777 " + FILES_DIR + "EttercapForAndroid-master/bin/ettercap";
 }
