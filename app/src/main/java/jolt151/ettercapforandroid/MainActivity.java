@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -34,24 +33,19 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText editText;
+    EditText editTextArgs;
     TextView textView1;
     ExecuteTask executeTask;
     EditText editTextInterface;
@@ -64,8 +58,11 @@ public class MainActivity extends AppCompatActivity {
     Button buttonKill;
     EditText editTextCustom;
 
+    String LOGTAG = "EttercapForAndroid";
+
 
     public DataOutputStream outputStream;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,19 +84,19 @@ public class MainActivity extends AppCompatActivity {
         file.setExecutable(true);
 
 
-        button1 = (Button) findViewById(R.id.button1);
-        buttonQuit = (Button) findViewById(R.id.buttonQuit);
-        buttonCustom = (Button) findViewById(R.id.buttonCustom);
-        buttonKill = (Button) findViewById(R.id.buttonKill);
-        editTextCustom = (EditText) findViewById(R.id.editTextCustom);
-        checkBox1 = (CheckBox) findViewById(R.id.checkBox1);
-        editText = (EditText) findViewById(R.id.editText);
-        textView1 = (TextView) findViewById(R.id.textView1);
-        editTextInterface = (EditText) findViewById(R.id.editTextInterface);
-        editTextTargets = (EditText) findViewById(R.id.editTextTargets);
-        editTextOutput = (EditText) findViewById(R.id.editTextOutput);
+        button1 = findViewById(R.id.button1);
+        buttonQuit = findViewById(R.id.buttonQuit);
+        buttonCustom = findViewById(R.id.buttonCustom);
+        buttonKill = findViewById(R.id.buttonKill);
+        editTextCustom = findViewById(R.id.editTextCustom);
+        checkBox1 = findViewById(R.id.checkBox1);
+        editTextArgs = findViewById(R.id.editTextArgs);
+        textView1 = findViewById(R.id.textView1);
+        editTextInterface = findViewById(R.id.editTextInterface);
+        editTextTargets = findViewById(R.id.editTextTargets);
+        editTextOutput = findViewById(R.id.editTextOutput);
         textView1.setMovementMethod(new ScrollingMovementMethod());
-        textView1.setText("output");
+        textView1.setText("Output");
         //@TODO see later: evaluate if we can run multiple times without this button.
         buttonKill.setEnabled(false);
         buttonQuit.setEnabled(false);
@@ -110,7 +107,26 @@ public class MainActivity extends AppCompatActivity {
         String defaultInterface = sharedPrefs.getString("default_interface", null);
         String defaultTargets = sharedPrefs.getString("default_targets", null);
 
-        editText.setText(defaultArgs);
+        //@TODO THIS STOPS WORKING AFTER A BIT DUE TO GARBAGE COLLECTION (stack overflow)
+
+        SharedPreferences.OnSharedPreferenceChangeListener preferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                Log.d(LOGTAG, "key changed: " + key);
+                if (key.equals("default_args")){
+                    editTextArgs.setText(sharedPreferences.getString(key, null));
+                }
+                else if (key.equals("default_interface")){
+                    editTextInterface.setText(sharedPreferences.getString(key, null));
+                }
+                else if (key.equals("default_targets")){
+                    editTextTargets.setText(sharedPreferences.getString(key, null));
+                }
+            }
+        };
+        sharedPrefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener);
+
+        editTextArgs.setText(defaultArgs);
         editTextInterface.setText(defaultInterface);
         editTextTargets.setText(defaultTargets);
 
@@ -128,9 +144,9 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if (!editText.getText().toString().equals("")) {
+                if (!editTextArgs.getText().toString().equals("")) {
                     buttonQuit.setEnabled(true);
-                    Log.d("EfA", editText.getText().toString());
+                    Log.d(LOGTAG, editTextArgs.getText().toString());
 
                     File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
 
@@ -140,10 +156,10 @@ public class MainActivity extends AppCompatActivity {
 
                     StringBuilder builder1 = new StringBuilder("");
                     if (checkBox1.isChecked()) {
-                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && pwd && su &&" + Constants.CHMOD + " && " +
+                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && su &&" + Constants.CHMOD + " && " +
                                 Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
                                 + "-i " + editTextInterface.getText().toString() + " "
-                                + editText.getText().toString() + " "
+                                + editTextArgs.getText().toString() + " "
                                 + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() + " "
                                 + editTextTargets.getText().toString()
                         );
@@ -153,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                         builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && pwd && su &&" + Constants.CHMOD + " && " +
                                 Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
                                 + "-i " + editTextInterface.getText().toString() + " "
-                                + editText.getText().toString() + " "
+                                + editTextArgs.getText().toString() + " "
                                 + editTextTargets.getText().toString()
                         );
                     }
@@ -167,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     //@TODO fix running multiple times, then see if we still need this button
                     //buttonKill.setEnabled(true);
 
-                    editText.setEnabled(false);
+                    editTextArgs.setEnabled(false);
                     editTextInterface.setEnabled(false);
                     editTextOutput.setEnabled(false);
                     editTextTargets.setEnabled(false);
@@ -188,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     outputStream.writeBytes("q");
                     outputStream.flush();
-                    Log.d("EfA", "Quit");
+                    Log.d(LOGTAG, "Quit");
                 } catch (Throwable e) {
                 }
                 buttonKill.setEnabled(true);
@@ -215,71 +231,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    protected void copyFromAssetsToInternalStorage(String filename) {
-        AssetManager assetManager = getAssets();
-
-        try {
-            InputStream input = assetManager.open(filename);
-            OutputStream output = openFileOutput(filename, Context.MODE_PRIVATE);
-
-            copyFile(input, output);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+/*    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
     }
 
 
-    private boolean unpackZip(String path, String zipname) {
-        InputStream is;
-        ZipInputStream zis;
-        try {
-            String filename;
-            is = new FileInputStream(path + zipname);
-            zis = new ZipInputStream(new BufferedInputStream(is));
-            ZipEntry ze;
-            byte[] buffer = new byte[1024];
-            int count;
 
-            while ((ze = zis.getNextEntry()) != null) {
-                // zapis do souboru
-                filename = ze.getName();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(myPrefListner);
 
-                // Need to create directories if not exists, or
-                // it will generate an Exception...
-                if (ze.isDirectory()) {
-                    File fmd = new File(path + filename);
-                    fmd.mkdirs();
-                    continue;
-                }
-
-                FileOutputStream fout = new FileOutputStream(path + filename);
-
-                // cteni zipu a zapis
-                while ((count = zis.read(buffer)) != -1) {
-                    fout.write(buffer, 0, count);
-                }
-
-                fout.close();
-                zis.closeEntry();
-            }
-
-            zis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
-    }
+    }*/
 
     private class ExecuteTask extends AsyncTask<String, String, String> {
         final Context context;
@@ -308,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 inputStream = new BufferedReader(new InputStreamReader(scanProcess.getInputStream()));
 
                 for (String single : commands) {
-                    Log.i("EfA", "Single Executing: " + single);
+                    Log.i(LOGTAG, "Single Executing: " + single);
                     outputStream.writeBytes(single + "\n");
                     outputStream.flush();
                 }
@@ -323,11 +289,11 @@ public class MainActivity extends AppCompatActivity {
                             pstdout = pstdout + "\n";
                             wholeoutput.append(pstdout);
                         }
-                        Log.i("EfA", "Stdout: " + pstdout);
+                        Log.i(LOGTAG, "Stdout: " + pstdout);
                         publishProgress(pstdout, null);
                         pstdout = null;
                     }
-                    Log.d("EfA", "are we running?");
+                    Log.d(LOGTAG, "are we running?");
                 }
 
 
@@ -400,16 +366,16 @@ public class MainActivity extends AppCompatActivity {
         protected void cancelScan() {
             executeTask.cancel(true);
             onCancelled();
-            Log.d("EfA", "Canceled: " + String.valueOf(executeTask.isCancelled()));
+            Log.d(LOGTAG, "Canceled: " + String.valueOf(executeTask.isCancelled()));
             Thread cancelThread = new Thread() {
                 @Override
                 public void run() {
                     try {
                         String killstr = new String("/system/bin/kill -9 " + ProcessUtil.getppid(ProcessUtil.getpid(scanProcess), shellToRun));
-                        Log.i("EfA", "Executing kill: " + killstr);
+                        Log.i(LOGTAG, "Executing kill: " + killstr);
                         Runtime.getRuntime().exec(killstr);
                     } catch (IOException e) {
-                        Log.e("EfA", "Error killing process");
+                        Log.e(LOGTAG, "Error killing process");
                     }
                 }
 
@@ -480,15 +446,6 @@ public class MainActivity extends AppCompatActivity {
                     });
             alert = builder.create();
             return alert;
-        } else if (id == 3) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage("Downloading file…");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.setMax(100);
-            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
-            mProgressDialog.show();
-            return mProgressDialog;
         } else {
             return null;
         }
@@ -517,8 +474,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
-    ProgressDialog mProgressDialog;
 
     /**
      * Async Task to download file from URL
@@ -591,7 +546,7 @@ public class MainActivity extends AppCompatActivity {
                     // publishing the progress....
                     // After this onProgressUpdate will be called
                     publishProgress("" + (int) ((total * 100) / lengthOfFile));
-                    Log.d("EfA", "Progress: " + (int) ((total * 100) / lengthOfFile));
+                    Log.d(LOGTAG, "Progress: " + (int) ((total * 100) / lengthOfFile));
 
                     // writing data to file
                     output.write(data, 0, count);
@@ -606,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
                 return "Downloaded at: " + folder + fileName;
 
             } catch (Exception e) {
-                Log.e("Error: ", e.getMessage());
+                Log.e(LOGTAG, e.getMessage());
             }
 
             return "Something went wrong";
@@ -620,7 +575,6 @@ public class MainActivity extends AppCompatActivity {
             progressDialog.setProgress(Integer.parseInt(progress[0]));
         }
 
-
         @Override
         protected void onPostExecute(String message) {
             // dismiss the dialog after the file was downloaded
@@ -630,10 +584,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),
                     message, Toast.LENGTH_LONG).show();
 
-            unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
+            Util.unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
 
         }
-
     }
+
 }
 
