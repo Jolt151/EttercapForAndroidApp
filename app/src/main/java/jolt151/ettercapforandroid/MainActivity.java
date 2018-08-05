@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     Button buttonQuit;
     Button buttonCustom;
     Button button1;
-    Button buttonKill;
     EditText editTextCustom;
 
     String LOGTAG = "EttercapForAndroid";
@@ -85,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         button1 = findViewById(R.id.button1);
         buttonQuit = findViewById(R.id.buttonQuit);
         buttonCustom = findViewById(R.id.buttonCustom);
-        buttonKill = findViewById(R.id.buttonKill);
         editTextCustom = findViewById(R.id.editTextCustom);
         checkBox1 = findViewById(R.id.checkBox1);
         editTextArgs = findViewById(R.id.editTextArgs);
@@ -96,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         textView1.setMovementMethod(new ScrollingMovementMethod());
         textView1.setText("Output");
         //@TODO see later: evaluate if we can run multiple times without this button.
-        buttonKill.setEnabled(false);
         buttonQuit.setEnabled(false);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -226,14 +223,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        buttonKill.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                executeTask.cancelScan();
-
-            }
-        });
-
     }
 
     private class ExecuteTask extends AsyncTask<String, String, String> {

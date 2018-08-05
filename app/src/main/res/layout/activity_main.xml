@@ -129,7 +129,6 @@
         android:layout_height="40dp"
         android:layout_alignStart="@+id/button1"
         android:layout_below="@+id/editTextOutput"
-        android:layout_toEndOf="@+id/buttonKill"
         android:text="Run" />
 
     <EditText
@@ -141,15 +140,6 @@
         android:ems="10"
         android:inputType="textPersonName" />
 
-    <Button
-        android:id="@+id/buttonKill"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/editTextInterface"
-        android:layout_below="@+id/textView4"
-        android:layout_toEndOf="@+id/buttonQuit"
-        android:text="Kill Task"
-        android:layout_alignBottom="@+id/buttonQuit" />
 
 
 </RelativeLayout>
