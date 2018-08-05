@@ -128,12 +128,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-/*                int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            1);
-                }*/
                 String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if(EasyPermissions.hasPermissions(MainActivity.this, perms)){
 
