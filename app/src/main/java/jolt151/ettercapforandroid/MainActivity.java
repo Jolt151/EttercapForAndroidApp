@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -75,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
         if (!file.exists()) {
             showDialog(2);
         }
-
-        //copyFromAssetsToInternalStorage("EttercapForAndroid.zip");
-        //unpackZip(getApplicationInfo().dataDir + "/files/","EttercapForAndroid.zip");
 
 
         file.setExecutable(true);
@@ -176,8 +175,9 @@ public class MainActivity extends AppCompatActivity {
                     executeTask = new ExecuteTask(getApplicationContext());
                     executeTask.execute(cmdline);
 
-                    button1.setAlpha(.5f);
-                    button1.setClickable(false);
+                    button1.setEnabled(false);
+/*                        button1.setAlpha(.5f);
+                    button1.setClickable(false);*/
 
                     //@TODO fix running multiple times, then see if we still need this button
                     //buttonKill.setEnabled(true);
@@ -195,18 +195,24 @@ public class MainActivity extends AppCompatActivity {
         });
         buttonQuit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-/*                StringBuilder builder2 = new StringBuilder("");
-                builder2.append("q");
-                String cmdline = builder2.toString();
-                executeTask2 = new ExecuteTask(getApplicationContext());
-                executeTask2.execute(cmdline);*/
                 try {
                     outputStream.writeBytes("q");
                     outputStream.flush();
                     Log.d(LOGTAG, "Quit");
                 } catch (Throwable e) {
                 }
-                buttonKill.setEnabled(true);
+
+                Handler handler = new Handler(){
+                    @Override
+                    public void handleMessage(Message msg){
+                        if (msg.what == 1){
+                            executeTask.cancelScan();
+                        }
+                    }
+                };
+                showDialog(3);
+
+                handler.sendEmptyMessageDelayed(1, 7000);
 
             }
         });
@@ -229,22 +235,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-/*    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        getSharedPreferences().registerOnSharedPreferenceChangeListener(listener);
-    }
-
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(myPrefListner);
-
-    }*/
 
     private class ExecuteTask extends AsyncTask<String, String, String> {
         final Context context;
@@ -281,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 outputStream.flush();
                 while (((pstdout = inputStream.readLine()) != null)) {
                     if (isCancelled()) {
+                        showDialog(3);
                         scanProcess.destroy();
                         break;
                     } else {
@@ -292,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
                         publishProgress(pstdout, null);
                         pstdout = null;
                     }
-                    Log.d(LOGTAG, "are we running?");
                 }
 
 
@@ -336,20 +326,6 @@ public class MainActivity extends AppCompatActivity {
             }
             setSupportProgressBarIndeterminateVisibility(false);
             recreate();
-            //startedScan=false;
-            //scanButton.setText(getString(R.string.scanbtn));
-            //scrollToBottom();
-
-            //@TODO if we can get this running multiple times, then enable changing the settings. otherwise, keep everything disabled until restart.
-/*            button1.setAlpha(1f);
-            button1.setClickable(true);
-            editText.setEnabled(true);
-            editTextInterface.setEnabled(true);
-            editTextTargets.setEnabled(true);
-            editTextOutput.setEnabled(true);
-            checkBox1.setEnabled(true);
-            buttonKill.setEnabled(false);*/
-
         }
 
         @Override
@@ -377,8 +353,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(LOGTAG, "Error killing process");
                     }
                 }
-
             };
+            cancelThread.run();
         }
 
     }
@@ -446,7 +422,16 @@ public class MainActivity extends AppCompatActivity {
                     });
             alert = builder.create();
             return alert;
-        } else {
+        } else if (id == 3){
+            ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setMessage("Cancelling and giving time to re-ARP victims, this can take a while...");
+            dialog.setIndeterminate(false);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setCancelable(false);
+            dialog.show();
+            return null;
+        }
+        else {
             return null;
         }
     }
