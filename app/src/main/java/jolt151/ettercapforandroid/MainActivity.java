@@ -92,9 +92,6 @@ public class MainActivity extends AppCompatActivity {
         editTextTargets = findViewById(R.id.editTextTargets);
         editTextOutput = findViewById(R.id.editTextOutput);
         textView1.setMovementMethod(new ScrollingMovementMethod());
-        textView1.setText("Output");
-        //@TODO see later: evaluate if we can run multiple times without this button.
-        buttonQuit.setEnabled(false);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);

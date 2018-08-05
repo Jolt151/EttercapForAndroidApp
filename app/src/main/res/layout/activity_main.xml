@@ -17,7 +17,8 @@
         android:text="Quit"
         android:layout_below="@+id/textView4"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/editTextTargets" />
+        android:layout_toStartOf="@+id/editTextTargets"
+        android:enabled="false"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -43,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="250dp"
         android:gravity="bottom"
-        android:text="TextView"
+        android:text="Output"
         android:layout_below="@+id/editTextCustom"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
