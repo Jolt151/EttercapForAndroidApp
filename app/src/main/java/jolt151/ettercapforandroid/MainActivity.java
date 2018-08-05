@@ -44,8 +44,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     EditText editTextArgs;
     TextView textView1;
@@ -124,12 +128,20 @@ public class MainActivity extends AppCompatActivity {
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-                int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+/*                int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 if (permissionCheck == PackageManager.PERMISSION_DENIED) {
                     ActivityCompat.requestPermissions(MainActivity.this,
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             1);
+                }*/
+                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                if(EasyPermissions.hasPermissions(MainActivity.this, perms)){
+
                 }
+                else{
+                    EasyPermissions.requestPermissions(MainActivity.this, "We need to be able to write to external storage to output the capture file.", 1, perms);
+                }
+
             }
         });
 
@@ -563,5 +575,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Log.d(LOGTAG, "onPermissionsDenied:" + requestCode + ":" + perms.size());
+        checkBox1.setChecked(false);
+
+        // (Optional) Check whether the user denied any permissions and checked "NEVER ASK AGAIN."
+        // This will display a dialog directing them to enable the permission in app settings.
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        // Some permissions have been granted
+        // ...
+    }
 }
 
