@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -97,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         editTextOutput = findViewById(R.id.editTextOutput);
         textView1.setMovementMethod(new ScrollingMovementMethod());
 
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+        editTextOutput.setText(timeStamp + ".pcap");
+
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultArgs = sharedPrefs.getString("default_args", null);
@@ -142,54 +146,55 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if (!editTextArgs.getText().toString().equals("")) {
-                    buttonQuit.setEnabled(true);
-                    Log.d(LOGTAG, editTextArgs.getText().toString());
-
-                    File root = new File(Environment.getExternalStorageDirectory(), "Ettercap For Android");
-
-                    if (!root.exists()) {
-                        root.mkdirs();
-                    }
-
-                    StringBuilder builder1 = new StringBuilder("");
-                    if (checkBox1.isChecked()) {
-                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && su &&" + Constants.CHMOD + " && " +
-                                Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
-                                + "-i " + editTextInterface.getText().toString() + " "
-                                + editTextArgs.getText().toString() + " "
-                                + "-w " + Environment.getExternalStorageDirectory() + "/Ettercap\\ for\\ Android/" + editTextOutput.getText().toString() + " "
-                                + editTextTargets.getText().toString()
-                        );
-
-                        Toast.makeText(getApplicationContext(), "Saving to /sdcard/Ettercap for Android/" + editTextOutput.getText().toString(), Toast.LENGTH_SHORT).show();
-                    } else {
-                        builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && pwd && su &&" + Constants.CHMOD + " && " +
-                                Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
-                                + "-i " + editTextInterface.getText().toString() + " "
-                                + editTextArgs.getText().toString() + " "
-                                + editTextTargets.getText().toString()
-                        );
-                    }
-                    String cmdline = builder1.toString();
-                    executeTask = new ExecuteTask(getApplicationContext());
-                    executeTask.execute(cmdline);
-
-                    button1.setEnabled(false);
-/*                        button1.setAlpha(.5f);
-                    button1.setClickable(false);*/
-
-                    //@TODO fix running multiple times, then see if we still need this button
-                    //buttonKill.setEnabled(true);
-
-                    editTextArgs.setEnabled(false);
-                    editTextInterface.setEnabled(false);
-                    editTextOutput.setEnabled(false);
-                    editTextTargets.setEnabled(false);
-                    checkBox1.setEnabled(false);
-
+                File output = new File(Constants.OUTPUT_DIR + editTextOutput.getText().toString());
+                Log.d(LOGTAG, output.getName());
+                if (output.exists()){
+                    showDialog(4);
                 } else {
-                    Toast.makeText(getApplicationContext(), "No args!", Toast.LENGTH_SHORT).show();
+                    if (!editTextArgs.getText().toString().equals("")) {
+                        buttonQuit.setEnabled(true);
+                        Log.d(LOGTAG, editTextArgs.getText().toString());
+
+                        File root = new File(Environment.getExternalStorageDirectory(), "EttercapForAndroid");
+
+                        if (!root.exists()) {
+                            root.mkdirs();
+                        }
+
+                        StringBuilder builder1 = new StringBuilder("");
+                        if (checkBox1.isChecked()) {
+                            builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && su &&" + Constants.CHMOD + " && " +
+                                    Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
+                                    + "-i " + editTextInterface.getText().toString() + " "
+                                    + editTextArgs.getText().toString() + " "
+                                    + "-w " + Environment.getExternalStorageDirectory() + "/EttercapForAndroid/" + editTextOutput.getText().toString() + " "
+                                    + editTextTargets.getText().toString()
+                            );
+
+                            Toast.makeText(getApplicationContext(), "Saving to /sdcard/EttercapForAndroid/" + editTextOutput.getText().toString(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            builder1.append("cd " + Constants.FILES_DIR + "EttercapForAndroid-master/bin/" + " && pwd && su &&" + Constants.CHMOD + " && " +
+                                    Constants.FILES_DIR + "EttercapForAndroid-master/bin/ettercap "
+                                    + "-i " + editTextInterface.getText().toString() + " "
+                                    + editTextArgs.getText().toString() + " "
+                                    + editTextTargets.getText().toString()
+                            );
+                        }
+                        String cmdline = builder1.toString();
+                        executeTask = new ExecuteTask(getApplicationContext());
+                        executeTask.execute(cmdline);
+
+                        button1.setEnabled(false);
+
+                        editTextArgs.setEnabled(false);
+                        editTextInterface.setEnabled(false);
+                        editTextOutput.setEnabled(false);
+                        editTextTargets.setEnabled(false);
+                        checkBox1.setEnabled(false);
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No args!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -422,6 +427,21 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             dialog.setCancelable(false);
             dialog.show();
             return null;
+        } else if(id == 4){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("There is already a file with that name! Pick a different file name to continue, or press the refresh button to automatically change the name.")
+                    .setPositiveButton("Refresh name", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            editTextOutput.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()) + ".pcap");
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                }
+            });
+            return builder.create();
         }
         else {
             return null;
