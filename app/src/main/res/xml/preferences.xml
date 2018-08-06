@@ -8,8 +8,8 @@
         <EditTextPreference
             app:title="Default args"
             app:key="default_args"
-            app:defaultValue=""
-            app:summary=""/>
+            app:defaultValue="-Tq -M arp:remote"
+            app:summary="-Tq -M arp:remote"/>
         <EditTextPreference
             app:title="Default Interface"
             app:key="default_interface"
