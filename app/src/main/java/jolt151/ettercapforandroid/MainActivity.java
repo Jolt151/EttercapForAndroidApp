@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 Log.d(LOGTAG, output.getName());
                 if (output.exists()){
                     showDialog(4);
-                } else {
+                } else if (chkStatus().equals("wifi")) {
                     if (!editTextArgs.getText().toString().equals("")) {
                         buttonQuit.setEnabled(true);
                         Log.d(LOGTAG, editTextArgs.getText().toString());
@@ -195,7 +196,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     } else {
                         Toast.makeText(getApplicationContext(), "No args!", Toast.LENGTH_SHORT).show();
                     }
+                } else if (!chkStatus().equals("wifi")){
+                    Toast.makeText(getApplicationContext(), "Error: you must be connected to wifi to use Ettercap", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
         buttonQuit.setOnClickListener(new View.OnClickListener() {
@@ -613,6 +617,23 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onPermissionsGranted(int requestCode, List<String> list) {
         // Some permissions have been granted
         // ...
+    }
+
+    String chkStatus() {
+        final ConnectivityManager connMgr = (ConnectivityManager)
+                this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        final android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifi.isConnectedOrConnecting ()) {
+            //Toast.makeText(this, "Wifi", Toast.LENGTH_LONG).show();
+            return "wifi";
+        } else if (mobile.isConnectedOrConnecting ()) {
+            //Toast.makeText(this, "Mobile 3G ", Toast.LENGTH_LONG).show();
+            return "mobile";
+        } else {
+           // Toast.makeText(this, "No Network ", Toast.LENGTH_LONG).show();
+            return "nonetwork";
+        }
     }
 }
 
