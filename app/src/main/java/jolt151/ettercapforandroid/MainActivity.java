@@ -32,6 +32,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -65,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     Button button1;
     EditText editTextCustom;
 
+    AdView mAdview;
+
     String LOGTAG = "EttercapForAndroid";
 
 
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         showDialog(0);
 
         File file = new File("/data/data/" + getPackageName() + "/files/EttercapForAndroid-master/bin/ettercap");
@@ -86,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         file.setExecutable(true);
 
+        mAdview = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdview.loadAd(adRequest);
 
         button1 = findViewById(R.id.button1);
         buttonQuit = findViewById(R.id.buttonQuit);

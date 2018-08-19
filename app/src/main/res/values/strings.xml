@@ -6,5 +6,9 @@
     <string name="pref_default_args">default_args</string>
     <string name="pref_default_interface">default_interface</string>
     <string name="pref_default_targets">default_targets</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-7011835056691637~5434914570</string>
+
+
 
 </resources>

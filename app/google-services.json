@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "896701596666",
+    "firebase_url": "https://ettercapforandroid.firebaseio.com",
+    "project_id": "ettercapforandroid",
+    "storage_bucket": "ettercapforandroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896701596666:android:6465b8bd32421077",
+        "android_client_info": {
+          "package_name": "jolt151.ettercapforandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "896701596666-4he64771taleeg1q7mdbl0odsnor93jn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "jolt151.ettercapforandroid",
+            "certificate_hash": "528fbe256657bc89c36a581a647875c8fd761951"
+          }
+        },
+        {
+          "client_id": "896701596666-2f2dgo3j8nk2nlqnoqspjrcfae0aqlum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiN-60ivsHb89Q7BT-shuJXQWdV-wehJs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "896701596666-2f2dgo3j8nk2nlqnoqspjrcfae0aqlum.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
