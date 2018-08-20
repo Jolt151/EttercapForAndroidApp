@@ -36,8 +36,10 @@ import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     EditText editTextCustom;
 
     AdView mAdview;
+    InterstitialAd interstitialAd;
     BillingProcessor billingProcessor;
     LinearLayout lp;
 
@@ -89,6 +92,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
 
         billingProcessor = new BillingProcessor(this, getString(R.string.license_key), this);
+        //Prepare interstitial ad
+        interstitialAd = new InterstitialAd(MainActivity.this);
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
 
         showDialog(0);
@@ -251,6 +257,32 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 showDialog(3);
 
                 handler.sendEmptyMessageDelayed(1, 7000);
+
+                //show interstitial ad after quitting
+                if (!billingProcessor.isPurchased("fullversion")){
+                    interstitialAd.loadAd(new AdRequest.Builder().build());
+                    interstitialAd.setAdListener(new AdListener(){
+                        @Override
+                        public void onAdClosed() {
+                            super.onAdClosed();
+
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(int errorCode) {
+                            super.onAdFailedToLoad(errorCode);
+
+                        }
+
+                        @Override
+                        public void onAdLoaded() {
+                            super.onAdLoaded();
+                            if (interstitialAd.isLoaded()) {
+                                interstitialAd.show();
+                            }
+                        }
+                    });
+                }
 
             }
         });
