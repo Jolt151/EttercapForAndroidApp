@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         public void onClick(DialogInterface dialog, int id) {
                         }
                     })
-                    .setNegativeButton("Ettercap Man Page", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Ettercap Manual", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Intent i = new Intent(Intent.ACTION_VIEW,
                                     Uri.parse("https://linux.die.net/man/8/ettercap"));
