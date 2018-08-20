@@ -29,6 +29,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,10 +101,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         file.setExecutable(true);
 
+//@TODO have the textview stretch to the bottom after removing ad.
+        textView1 = findViewById(R.id.textView1);
         if (!billingProcessor.isPurchased("fullversion")){
             mAdview = findViewById(R.id.adView);
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdview.loadAd(adRequest);
+        } else{
+            LinearLayout lp = new LinearLayout(this);
+            lp.removeView(mAdview);
         }
 
 
@@ -112,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         editTextCustom = findViewById(R.id.editTextCustom);
         checkBox1 = findViewById(R.id.checkBox1);
         editTextArgs = findViewById(R.id.editTextArgs);
-        textView1 = findViewById(R.id.textView1);
         editTextInterface = findViewById(R.id.editTextInterface);
         editTextTargets = findViewById(R.id.editTextTargets);
         editTextOutput = findViewById(R.id.editTextOutput);
