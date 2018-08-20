@@ -29,8 +29,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -51,7 +60,8 @@ import java.util.List;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
+                                                                BillingProcessor.IBillingHandler{
 
     EditText editTextArgs;
     TextView textView1;
@@ -65,6 +75,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     Button button1;
     EditText editTextCustom;
 
+    AdView mAdview;
+    InterstitialAd interstitialAd;
+    BillingProcessor billingProcessor;
+    LinearLayout lp;
+
     String LOGTAG = "EttercapForAndroid";
 
 
@@ -75,6 +90,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        billingProcessor = new BillingProcessor(this, getString(R.string.license_key), this);
+        //Prepare interstitial ad
+        interstitialAd = new InterstitialAd(MainActivity.this);
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+
+
         showDialog(0);
 
         File file = new File("/data/data/" + getPackageName() + "/files/EttercapForAndroid-master/bin/ettercap");
@@ -86,6 +108,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         file.setExecutable(true);
 
+//@TODO have the textview stretch to the bottom after removing ad.
+        textView1 = findViewById(R.id.textView1);
+        if (!billingProcessor.isPurchased("fullversion")){
+            mAdview = findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdview.loadAd(adRequest);
+        } else{
+            lp = new LinearLayout(this);
+            lp.removeView(mAdview);
+        }
+
 
         button1 = findViewById(R.id.button1);
         buttonQuit = findViewById(R.id.buttonQuit);
@@ -93,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         editTextCustom = findViewById(R.id.editTextCustom);
         checkBox1 = findViewById(R.id.checkBox1);
         editTextArgs = findViewById(R.id.editTextArgs);
-        textView1 = findViewById(R.id.textView1);
         editTextInterface = findViewById(R.id.editTextInterface);
         editTextTargets = findViewById(R.id.editTextTargets);
         editTextOutput = findViewById(R.id.editTextOutput);
@@ -133,14 +165,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                if(EasyPermissions.hasPermissions(MainActivity.this, perms)){
+                if (!billingProcessor.isPurchased("fullversion")) {
+                    checkBox1.setChecked(false);
+                    showDialog(5);
+                } else {
+                    String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                    if (EasyPermissions.hasPermissions(MainActivity.this, perms)) {
 
+                    } else {
+                        EasyPermissions.requestPermissions(MainActivity.this, "We need to be able to write to external storage to output the capture file.", 1, perms);
+                    }
                 }
-                else{
-                    EasyPermissions.requestPermissions(MainActivity.this, "We need to be able to write to external storage to output the capture file.", 1, perms);
-                }
-
             }
         });
 
@@ -222,6 +257,32 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 showDialog(3);
 
                 handler.sendEmptyMessageDelayed(1, 7000);
+
+                //show interstitial ad after quitting
+                if (!billingProcessor.isPurchased("fullversion")){
+                    interstitialAd.loadAd(new AdRequest.Builder().build());
+                    interstitialAd.setAdListener(new AdListener(){
+                        @Override
+                        public void onAdClosed() {
+                            super.onAdClosed();
+
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(int errorCode) {
+                            super.onAdFailedToLoad(errorCode);
+
+                        }
+
+                        @Override
+                        public void onAdLoaded() {
+                            super.onAdLoaded();
+                            if (interstitialAd.isLoaded()) {
+                                interstitialAd.show();
+                            }
+                        }
+                    });
+                }
 
             }
         });
@@ -361,7 +422,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     protected Dialog onCreateDialog(int id) {
-        AlertDialog alert;
         if (id == 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("LEGAL DISCLAIMER: I AM NOT RESPONSIBLE FOR ANYTHING THAT MAY HAPPEN BECAUSE OF THIS APP. BY USING THIS APP, YOU AFFIRM THAT YOU HAVE" +
@@ -377,8 +437,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                             System.exit(0);
                         }
                     });
-            alert = builder.create();
-            return alert;
+            return builder.create();
         } else if (id == 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("To use this tool, put in the proper arguments for ettercap, such as \"-Tq -M" +
@@ -403,8 +462,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                             startActivity(i);
                         }
                     });
-            alert = builder.create();
-            return alert;
+            return builder.create();
         } else if (id == 2) {
             Log.d(LOGTAG, Log.getStackTraceString(new Exception()));
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -421,8 +479,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                         }
                     });
-            alert = builder.create();
-            return alert;
+            return builder.create();
         } else if (id == 3){
             ProgressDialog dialog = new ProgressDialog(this);
             dialog.setMessage("Cancelling and giving time to re-ARP victims, this can take a while...");
@@ -446,6 +503,26 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 }
             });
             return builder.create();
+        } else if (id == 5){
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("Upgrade to the full version to remove ads and gain the ability to output captured packets to a file and change default settings!")
+                    .setPositiveButton("Upgrade", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (!BillingProcessor.isIabServiceAvailable(getApplicationContext())){
+                                Toast.makeText(getApplicationContext(), "Purchasing has been disabled for your device", Toast.LENGTH_SHORT);
+                            } else{
+                                billingProcessor.purchase(MainActivity.this, "fullversion");
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+            return builder.create();
         }
         else {
             return null;
@@ -454,6 +531,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        if (billingProcessor.isPurchased("fullversion")){
+            menu.findItem(R.id.upgrade).setVisible(false);
+        }
         return true;
     }
 
@@ -472,6 +553,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 return true;
             case R.id.download:
                 showDialog(2);
+                return true;
+            case R.id.upgrade:
+                if (!billingProcessor.isPurchased("fullversion")){
+                    showDialog(5);
+                } else{
+                    Toast.makeText(this, "Already purchased!", Toast.LENGTH_SHORT);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -633,6 +721,50 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else {
            // Toast.makeText(this, "No Network ", Toast.LENGTH_LONG).show();
             return "nonetwork";
+        }
+    }
+
+    //IBillingHandler Implementation
+    @Override
+    public void onBillingInitialized() {
+        /*
+         * Called when BillingProcessor was initialized and it's ready to purchase
+         */
+    }
+
+    @Override
+    public void onProductPurchased(String productId, TransactionDetails details) {
+        /*
+         * Called when requested PRODUCT ID was successfully purchased
+         */
+        if (productId.equals("fullversion")){
+            lp = new LinearLayout(this);
+            lp.removeView(mAdview);
+        }
+    }
+
+    @Override
+    public void onBillingError(int errorCode, Throwable error) {
+        /*
+         * Called when some error occurred. See Constants class for more details
+         *
+         * Note - this includes handling the case where the user canceled the buy dialog:
+         * errorCode = Constants.BILLING_RESPONSE_RESULT_USER_CANCELED
+         */
+    }
+
+    @Override
+    public void onPurchaseHistoryRestored() {
+        /*
+         * Called when purchase history was restored and the list of all owned PRODUCT ID's
+         * was loaded from Google Play
+         */
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!billingProcessor.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

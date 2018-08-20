@@ -6,13 +6,17 @@
         android:id="@+id/settings"
         android:title="Settings"/>
     <item
-        android:id="@+id/help"
-        android:title="Help" />
-    <item
         android:id="@+id/download"
         android:title="Download" />
     <item
+        android:id="@+id/upgrade"
+        android:title="Upgrade" />
+    <item
+        android:id="@+id/help"
+        android:title="Help" />
+    <item
         android:id="@+id/disclaimer"
         android:title="Disclaimer" />
+
 
 </menu>

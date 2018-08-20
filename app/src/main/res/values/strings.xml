@@ -6,5 +6,10 @@
     <string name="pref_default_args">default_args</string>
     <string name="pref_default_interface">default_interface</string>
     <string name="pref_default_targets">default_targets</string>
+    <string name="banner_ad_unit_id">ca-app-pub-7011835056691637/1056685868</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-7011835056691637/1842298933</string>
+    <string name="license_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnuzXeA/0qUXk+65mWFsWPhGoEFK/x7PotBVTwrEwQOOap0j8a+8E51/A3q6Scl67OTAXi9OurVCBZZE386SHuoN530nb6AZyhKQLzyOkoHSVeBV/7JyTw9NgHWJ4x8rpz0iCFiG5GEJPwd4R56WipBKyJD+xHK/ZstKplEdWsM+JAOrt2GR/JDpTjOgttaCpmjJs+FynGqiQ7Cu/7soRgNyiXCbd3Zj5BgWnA2I/T1S8N3bI+KOkqRDmS7AVYu/l3aTAjREEtgY/Iqe2qQneWrC1MEkdRzniy4vdgLw4W9a4j//NUWw1PUjAttqVoKlaruZ4yQ7y8BJ0dy6wChFZZwIDAQAB</string>
+
+
 
 </resources>
