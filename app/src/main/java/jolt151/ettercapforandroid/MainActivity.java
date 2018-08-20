@@ -531,6 +531,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        if (billingProcessor.isPurchased("fullversion")){
+            menu.findItem(R.id.upgrade).setVisible(false);
+        }
         return true;
     }
 
