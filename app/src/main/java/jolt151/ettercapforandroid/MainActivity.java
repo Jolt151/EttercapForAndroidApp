@@ -466,7 +466,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else if (id == 2) {
             Log.d(LOGTAG, Log.getStackTraceString(new Exception()));
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage("Ettercap binaries are not installed. Download now?")
+
+            String message;
+            File file = new File("/data/data/" + getPackageName() + "/files/EttercapForAndroid-master/bin/ettercap");
+            if (file.exists()){
+                message = "Would you like to redownload the ettercap binaries?";
+            } else {
+                message = "Ettercap binaries are not installed. Download now?";
+            }
+            builder.setMessage(message)
                     .setPositiveButton("YES", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
