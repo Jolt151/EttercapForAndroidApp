@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     AdView mAdview;
     BillingProcessor billingProcessor;
+    LinearLayout lp;
 
     String LOGTAG = "EttercapForAndroid";
 
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdview.loadAd(adRequest);
         } else{
-            LinearLayout lp = new LinearLayout(this);
+            lp = new LinearLayout(this);
             lp.removeView(mAdview);
         }
 
@@ -700,6 +701,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         /*
          * Called when requested PRODUCT ID was successfully purchased
          */
+        if (productId.equals("fullversion")){
+            lp = new LinearLayout(this);
+            lp.removeView(mAdview);
+        }
     }
 
     @Override
