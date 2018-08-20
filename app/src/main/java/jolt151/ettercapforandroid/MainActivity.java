@@ -99,9 +99,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         file.setExecutable(true);
 
-        mAdview = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdview.loadAd(adRequest);
+        if (!billingProcessor.isPurchased("fullversion")){
+            mAdview = findViewById(R.id.adView);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdview.loadAd(adRequest);
+        }
+
 
         button1 = findViewById(R.id.button1);
         buttonQuit = findViewById(R.id.buttonQuit);
@@ -149,14 +152,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-                String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-                if(EasyPermissions.hasPermissions(MainActivity.this, perms)){
+                if (!billingProcessor.isPurchased("fullversion")) {
+                    checkBox1.setChecked(false);
+                    showDialog(5);
+                } else {
+                    String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                    if (EasyPermissions.hasPermissions(MainActivity.this, perms)) {
 
+                    } else {
+                        EasyPermissions.requestPermissions(MainActivity.this, "We need to be able to write to external storage to output the capture file.", 1, perms);
+                    }
                 }
-                else{
-                    EasyPermissions.requestPermissions(MainActivity.this, "We need to be able to write to external storage to output the capture file.", 1, perms);
-                }
-
             }
         });
 
@@ -506,7 +512,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 showDialog(2);
                 return true;
             case R.id.upgrade:
-                showDialog(5);
+                if (!billingProcessor.isPurchased("fullversion")){
+                    showDialog(5);
+                } else{
+                    Toast.makeText(this, "Already purchased!", Toast.LENGTH_SHORT);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
