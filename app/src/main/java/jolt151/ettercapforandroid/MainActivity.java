@@ -426,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("LEGAL DISCLAIMER: I AM NOT RESPONSIBLE FOR ANYTHING THAT MAY HAPPEN BECAUSE OF THIS APP. BY USING THIS APP, YOU AFFIRM THAT YOU HAVE" +
                     " PERMISSION TO USE ETTERCAP AND SIMILAR TOOLS ON THE NETWORK.\n" +
-                    "This app is in beta. Ettercap is a big program. MOST of the features are untested, aside from the main ones. Expect frequent restarts.")
+                    "This app is in alpha. Ettercap is a big program. MOST of the features are untested, aside from the main ones. Expect bugs.")
                     .setCancelable(false)
                     .setPositiveButton("Agree", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -441,15 +441,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else if (id == 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("To use this tool, put in the proper arguments for ettercap, such as \"-Tq -M" +
-                    " arp:remote\". The interface in most cases will be wlan0. You can set the targets like Ettercap: // // targets the whole network, while " +
-                    "/192.168.1.101/ // will target that specific IP. The -i field is automatically added with the value in \"interface\", and the -w field is added" +
-                    " if \"output file\" is checked. The file will be saved to the 'Ettercap for Android' folder on the SD card. In case of crashes, go to the " +
-                    "app's settings and ensure that the permissions are enabled.\n" +
-                    "Once ettercap is running, you can use the lower run command to input certain keystrokes. For example, 'h' will show the available options, and " +
-                    "'q' will quit ettercap safely. The quit button is identical to running 'q'.\n" +
-                    "This app is still in beta. Expect crashes, and expect to restart after using once. The 'Kill AsyncTask' button is supposed to refresh the app " +
-                    "so it can be run again, but it still doesn't work, so it's disabled for now. To run ettercap again, restart the app." +
-                    "\n I'd love to hear your feedback! Drop me a message at jolt0101@gmail.com, or at least until I find a better way of collecting feedback.")
+                    " arp:remote\". The interface in most cases will be wlan0. Set the targets like this: // // targets the whole network, while " +
+                    "/192.168.1.101/ // will target that specific IP. Refer to the ettercap manual for more info." +
+                    "\n\nIf you have enabled outputting to file, the file will be saved to the 'Ettercap for Android' folder on the SD card. " +
+                    "\n\nOnce ettercap is running, you can use the lower run command to input certain keystrokes. For example, 'h' will show the available options." +
+                    "\n\nTo safely quit ettercap, use the quit button so the program can safely re-ARP the targets. Force closing the app can have unintended side effects." +
+                    "\n\nThis app is still in alpha, and many features are untested. I can only confirm that the main arguments work, which is enough for most people." +
+                    "\n\nI'd love to hear your feedback! Drop me a message at michaellevi151@gmail.com, at least until I find a better way of collecting feedback.")
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
