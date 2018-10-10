@@ -17,6 +17,9 @@
     <item
         android:id="@+id/disclaimer"
         android:title="Disclaimer" />
+    <item
+        android:id="@+id/privacy"
+        android:title="Privacy Policy" />
 
 
 </menu>

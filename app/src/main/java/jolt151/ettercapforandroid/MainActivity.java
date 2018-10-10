@@ -567,6 +567,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     Toast.makeText(this, "Already purchased!", Toast.LENGTH_SHORT);
                 }
                 return true;
+            case R.id.privacy:
+                String url = "https://ettercapforandroid.firebaseapp.com/privacy.html";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
             default:
                 return super.onOptionsItemSelected(item);
 
