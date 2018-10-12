@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         file.setExecutable(true);
 
-//@TODO have the textview stretch to the bottom after removing ad.
         textView1 = findViewById(R.id.textView1);
         if (!billingProcessor.isPurchased("fullversion")){
             //prepare banner ad
