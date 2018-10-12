@@ -15,12 +15,13 @@
     <Button
         android:id="@+id/buttonQuit"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="Quit"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/textView4"
         android:layout_alignParentStart="true"
+        android:layout_marginEnd="-63dp"
         android:layout_toStartOf="@+id/editTextTargets"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:text="Quit Safely" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -49,7 +50,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/editTextCustom"
+        android:layout_below="@+id/buttonQuit"
         android:layout_marginBottom="49dp"
         android:gravity="bottom"
         android:text="Output" />
@@ -130,17 +131,18 @@
 
     <Button
         android:id="@+id/buttonCustom"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_alignStart="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/editTextOutput"
+        android:layout_alignStart="@+id/button1"
         android:text="Run" />
 
     <EditText
         android:id="@+id/editTextCustom"
         android:layout_width="40dp"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_below="@+id/checkBox1"
+        android:layout_marginEnd="0dp"
         android:layout_toStartOf="@+id/buttonCustom"
         android:ems="10"
         android:inputType="textPersonName" />

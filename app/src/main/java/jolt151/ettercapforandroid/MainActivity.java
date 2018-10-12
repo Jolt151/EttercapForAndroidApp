@@ -1,6 +1,7 @@
 package jolt151.ettercapforandroid;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -40,6 +41,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -60,7 +65,7 @@ import java.util.List;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, RewardedVideoAdListener,
                                                                 BillingProcessor.IBillingHandler{
 
     EditText editTextArgs;
@@ -77,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     AdView mAdview;
     InterstitialAd interstitialAd;
+    RewardedVideoAd mRewardedVideoAd;
+    boolean isRewarded;
     BillingProcessor billingProcessor;
     LinearLayout lp;
 
@@ -92,9 +99,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
 
         billingProcessor = new BillingProcessor(this, getString(R.string.license_key), this);
-        //Prepare interstitial ad
-        interstitialAd = new InterstitialAd(MainActivity.this);
-        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+
 
 
         showDialog(0);
@@ -111,12 +116,28 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 //@TODO have the textview stretch to the bottom after removing ad.
         textView1 = findViewById(R.id.textView1);
         if (!billingProcessor.isPurchased("fullversion")){
+            //prepare banner ad
             mAdview = findViewById(R.id.adView);
-            AdRequest adRequest = new AdRequest.Builder().build();
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice("002B541CB3F67C0FB7DDA97E41BDE7D2").build();
             mAdview.loadAd(adRequest);
+
+            //Prepare interstitial ad
+            interstitialAd = new InterstitialAd(MainActivity.this);
+            interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+            interstitialAd.loadAd(new AdRequest.Builder().addTestDevice("002B541CB3F67C0FB7DDA97E41BDE7D2").build());
+
+            //prepare rewarded ad
+            MobileAds.initialize(this);
+            mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+            mRewardedVideoAd.setRewardedVideoAdListener(this);
+
+            mRewardedVideoAd.loadAd(getString(R.string.rewarded_ad_unit_id), new AdRequest.Builder().addTestDevice("002B541CB3F67C0FB7DDA97E41BDE7D2").build());
         } else{
             lp = new LinearLayout(this);
             lp.removeView(mAdview);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            params.setMargins(0,0,0,0);
+            textView1.setLayoutParams(params);
         }
 
 
@@ -165,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         checkBox1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-                if (!billingProcessor.isPurchased("fullversion")) {
+                if (!billingProcessor.isPurchased("fullversion") && !isRewarded) {
                     checkBox1.setChecked(false);
                     showDialog(5);
                 } else {
@@ -255,12 +276,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
                 };
                 showDialog(3);
-
-                handler.sendEmptyMessageDelayed(1, 7000);
-
                 //show interstitial ad after quitting
                 if (!billingProcessor.isPurchased("fullversion")){
-                    interstitialAd.loadAd(new AdRequest.Builder().build());
+            /*        interstitialAd.loadAd(new AdRequest.Builder().build());
                     interstitialAd.setAdListener(new AdListener(){
                         @Override
                         public void onAdClosed() {
@@ -281,8 +299,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                                 interstitialAd.show();
                             }
                         }
-                    });
+                    });*/
+                    if (interstitialAd.isLoaded()){
+                        interstitialAd.show();
+                    }
                 }
+                handler.sendEmptyMessageDelayed(1, 7000);
+
+
 
             }
         });
@@ -356,6 +380,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             return wholeoutput.toString();
         }
 
+        @SuppressLint("WakelockTimeout")
         @Override
         protected void onPreExecute() {
             // super.onPreExecute();
@@ -498,6 +523,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("There is already a file with that name! Pick a different file name to continue, or press the refresh button to automatically change the name.")
                     .setPositiveButton("Refresh name", new DialogInterface.OnClickListener() {
+                        @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             editTextOutput.setText(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()) + ".pcap");
@@ -511,12 +537,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             return builder.create();
         } else if (id == 5){
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setMessage("Upgrade to the full version to remove ads and gain the ability to output captured packets to a file and change default settings!")
+            builder.setMessage("Upgrade to the full version to remove ads and gain the ability to output captured packets to a file and change default settings!\n" +
+                    "Alternatively, you can watch a short video to use this feature temporarily.")
+                    .setNeutralButton("Watch Video", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (mRewardedVideoAd.isLoaded()){
+                                mRewardedVideoAd.show();
+                            }
+                        }
+                    })
                     .setPositiveButton("Upgrade", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if (!BillingProcessor.isIabServiceAvailable(getApplicationContext())){
-                                Toast.makeText(getApplicationContext(), "Purchasing has been disabled for your device", Toast.LENGTH_SHORT);
+                                Toast.makeText(getApplicationContext(), "Purchasing has been disabled for your device", Toast.LENGTH_SHORT).show();
+                                Log.d(LOGTAG, "purchasing disabled");
                             } else{
                                 billingProcessor.purchase(MainActivity.this, "fullversion");
                             }
@@ -751,6 +787,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         if (productId.equals("fullversion")){
             lp = new LinearLayout(this);
             lp.removeView(mAdview);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            params.setMargins(0,0,0,0);
+            textView1.setLayoutParams(params);
         }
     }
 
@@ -778,5 +817,59 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    @Override
+    public void onRewarded(RewardItem reward) {
+        Log.d(LOGTAG, "onrewarded: " + reward.getType() + " " + reward.getAmount());
+
+        // Reward the user.
+        isRewarded = true;
+
+
+    }
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int errorCode) {
+        Log.d(LOGTAG, "onRewardedVideoAdFailedToLoad");
+        mRewardedVideoAd.destroy(this);
+
+    }
+    @Override
+    public void onRewardedVideoAdLoaded() {
+        Log.d(LOGTAG, "onrewardedvideoadloaded");
+    }
+    @Override
+    public void onRewardedVideoAdOpened() {
+        Log.d(LOGTAG, "onRewardedVideoAdOpened");
+
+    }
+    @Override
+    public void onRewardedVideoAdClosed() {
+        Log.d(LOGTAG, "onRewardedVideoAdClosed");
+        if (isRewarded){
+            checkBox1.setChecked(true);
+            String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            if (EasyPermissions.hasPermissions(MainActivity.this, perms)) {
+
+            } else {
+                EasyPermissions.requestPermissions(MainActivity.this, "We need to be able to write to external storage to output the capture file.", 1, perms);
+            }
+        }
+        mRewardedVideoAd.destroy(this);
+        mRewardedVideoAd.loadAd(getString(R.string.rewarded_ad_unit_id), new AdRequest.Builder().addTestDevice("002B541CB3F67C0FB7DDA97E41BDE7D2").build());
+
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+        Log.d(LOGTAG, "onRewardedVideoStarted");
+
+    }
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+        Log.d(LOGTAG, "onRewardedVideoAdLeftApplication");
+        mRewardedVideoAd.pause(this);
+
+    }
+
 }
 
